@@ -25,7 +25,8 @@ try{
     let loggedinId=req.user._id;
     let conversations=await Conversation.find({
         members:{$in:[loggedinId]}
-    }).populate("members", "-password");
+    }).populate("members", "-password")
+    .sort({ updatedAt: -1 });
       res.status(200).json({
         message:"feteched Successfullly",
         conversations

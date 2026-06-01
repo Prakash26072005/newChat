@@ -13,24 +13,34 @@
 .register-card:hover{
     transform: scale(1.1);
 }
-.imageFile{
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
+.imageFile {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 15px;
 }
 
-.select-profile-btn{
-    padding: 10px;
-    border: 1px solid;
-    cursor: pointer;
-    width: fit-content;
-    background-color: black;
-    color: white;
-    font-weight: 600;
-    height: fit-content;
+.select-profile-btn {
+  padding: 12px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #111;
+  color: white;
+  font-weight: 600;
+  transition: 0.3s;
 }
-.avatar{
-    width: 85px;
-    height: 85px;
-    border-radius: 50%;
+
+.select-profile-btn:hover {
+  background: #222;
+  transform: translateY(-2px);
+}
+
+.avatar {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid white;
+  box-shadow: 0 0 12px rgba(255,255,255,0.4);
 }

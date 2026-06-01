@@ -1,3 +1,5 @@
+import dotenv from "dotenv";
+import AIRoutes from "./Routes/ai.js";
 import express from "express";
 import cookieParser from "cookie-parser";
 import "./Database/conn.js"; 
@@ -7,14 +9,13 @@ import MessageRoutes from "./Routes/message.js"
 import cors from "cors";
 import { Server } from "socket.io";
 import http from "http";
-import dotenv from "dotenv";
-
+dotenv.config();
 const app = express();
 const PORT =  8000;
 
 app.use(express.json());
 app.use(cookieParser());
-dotenv.config();
+
 
 const server=http.createServer(app)
 
@@ -52,6 +53,7 @@ app.use(cors({
 app.use("/api/auth",UserRoutes);
 app.use("/api/conversation",ConversationRoutes)
 app.use("/api/chat",MessageRoutes)
+app.use("/api/ai", AIRoutes);
 
  server.listen(PORT,()=>{
     console.log(`listening on port:${PORT}`);

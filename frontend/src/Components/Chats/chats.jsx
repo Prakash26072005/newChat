@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef} from "react";
+import { useEffect, useState, useRef} from "react";
 import "./chats.css"
 import axios from "axios";
 import socket from "../../socket";
@@ -21,7 +21,58 @@ const ref= useRef();
     console.log(err);
   }
 };
+
+const handleAIChat = async () => {
+  if (!content.trim()) return;
+
+  const ownUser = JSON.parse(
+    localStorage.getItem("userInfo")
+  );
+
+  const userMessage = {
+    sender: ownUser,
+    message: content,
+  };
+
+  setChats((prev) => [...prev, userMessage]);
+
+  const currentMessage = content;
+
+  setContent("");
+
+  try {
+    const response = await axios.post(
+      "http://localhost:8000/api/ai/ask",
+      {
+        prompt: currentMessage,
+      },
+      {
+        withCredentials: true,
+      }
+    );
+
+    const aiMessage = {
+      sender: {
+        name: "Unixa AI",
+        profilePic:
+          "https://cdn-icons-png.flaticon.com/512/4712/4712027.png",
+      },
+      message: response.data.reply,
+    };
+
+    setChats((prev) => [...prev, aiMessage]);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 const handleSendMessage = async () => {
+
+   if (selectedId === "AI") {
+    handleAIChat();
+    return;
+  }
+
   if (content.trim().length == 0)
     return alert("Please Enter Message");
 
@@ -50,11 +101,24 @@ useEffect(()=>{
   })
 },[chats])
 
- useEffect(() => {
+//  useEffect(() => {
  
-    fetchMsg();
-    setContent("")
+//     fetchMsg();
+//     setContent("")
   
+// }, [selectedId]);
+
+useEffect(() => {
+
+  if (selectedId === "AI") {
+    setChats([]);
+    setContent("");
+    return;
+  }
+
+  fetchMsg();
+  setContent("");
+
 }, [selectedId]);
 
 

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import { useState, useRef } from "react";
 import "./register.css";
 import Loader from "./Loader/loader";
 import axios from "axios";
@@ -7,21 +7,15 @@ const Register = ({ funcSetLogin }) => {
   const passwordRef = useRef();
   const nameRef = useRef();
 
-  const [ProfileModel, SetProfileModel] = useState(false);
+
   const [inputField, setInputFields] = useState({
     mobileNumber: "",
     password: "",
     name: "",
-    profilePic:
-      "https://images.unsplash.com/photo-1728887823143-d92d2ebbb53a?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGNhcnRvb24lMjBhdmF0YXJ8ZW58MHx8MHx8fDA%3D",
+    profilePic: null
   });
   const [loading, setLoading] = useState(false);
-  const handleSetImage = (link) => {
-    setInputFields({
-      ...inputField,
-      ["profilePic"]: link,
-    });
-  };
+
   const HandleClickNotRegistered = () => {
     funcSetLogin(true);
   };
@@ -32,21 +26,29 @@ const Register = ({ funcSetLogin }) => {
     });
   };
 
-  const handleRegister = async () => {
-    setLoading(true);
-    await axios
-      .post("http://localhost:8000/api/auth/register", inputField)
-      .then((response) => {
-        console.log(response);
-        funcSetLogin(true);
-      })
-      .catch((err) => {
-        console.log(err);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
+const handleRegister = async () => {
+  setLoading(true);
+
+  const formData = new FormData();
+
+  formData.append("name", inputField.name);
+  formData.append("mobileNumber", inputField.mobileNumber);
+  formData.append("password", inputField.password);
+  formData.append("profilePic", inputField.profilePic);
+
+  await axios
+    .post("http://localhost:8000/api/auth/register", formData)
+    .then((response) => {
+      console.log(response);
+      funcSetLogin(true);
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+    .finally(() => {
+      setLoading(false);
+    });
+};
 
   return (
     <div className="login">
@@ -96,12 +98,32 @@ const Register = ({ funcSetLogin }) => {
             placeholder="Enter Name"
           />
           <div className="imageFile">
-            <div className="select-profile-btn">Select Profile Image</div>
-            <img
-              className="avatar"
-              src="https://as2.ftcdn.net/v2/jpg/05/89/93/27/1000_F_589932782_vQAEAZhHnq1QCGu5ikwrYaQD0Mmurm0N.jpg"
-            />
-          </div>
+  <label htmlFor="profile-upload" className="select-profile-btn">
+    Select Profile Image
+  </label>
+
+  <img
+    className="avatar"
+    src={
+      inputField.profilePic
+        ? URL.createObjectURL(inputField.profilePic)
+        : "https://as2.ftcdn.net/v2/jpg/05/89/93/27/1000_F_589932782_vQAEAZhHnq1QCGu5ikwrYaQD0Mmurm0N.jpg"
+    }
+  />
+
+  <input
+    id="profile-upload"
+    type="file"
+    accept="image/*"
+    hidden
+    onChange={(e) => {
+      setInputFields({
+        ...inputField,
+        profilePic: e.target.files[0],
+      });
+    }}
+  />
+</div>
           <div className="button" onClick={handleRegister}>
             Register
           </div>

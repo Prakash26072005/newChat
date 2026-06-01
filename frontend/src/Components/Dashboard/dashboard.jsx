@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./dashboard.css";
 import SearchIcon from "@mui/icons-material/Search";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -165,6 +165,39 @@ const Dashboard = ({ setLoginFunc }) => {
               ) : null}
             </div>
             <div className="conv-block">
+
+              <div
+  className={`conv ${selectedId === "AI" ? "active-class" : ""}`}
+  onClick={() => {
+    setSelectedId("AI");
+
+    setSelectedUserDetails([
+      {
+        name: "Unixa AI",
+        profilePic:
+          "https://cdn-icons-png.flaticon.com/512/4712/4712027.png",
+      },
+    ]);
+  }}
+>
+  <div className="conv-profile-img">
+    <img
+      className="profile-img-conv"
+      src="https://cdn-icons-png.flaticon.com/512/4712/4712027.png"
+      alt=""
+    />
+  </div>
+
+  <div className="conv-name">
+    <div className="conv-profile-name">
+      Unixa AI
+    </div>
+
+    <div className="conv-last-message">
+      Ask Anything...
+    </div>
+  </div>
+</div>
               {conversation.map((item, index) => {
                 return (
                   <Conversation
