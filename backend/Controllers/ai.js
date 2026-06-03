@@ -1,34 +1,78 @@
 import { GoogleGenAI } from "@google/genai";
-import 'dotenv/config'; // Loads the .env variables into process.env
+import "dotenv/config";
+import Message from "../Models/message.js";
 
-// Initialize the client. It automatically picks up process.env.GEMINI_API_KEY
-const ai = new GoogleGenAI({});
+const ai = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY,
+});
 
 export const askAI = async (req, res) => {
   try {
-    const { prompt } = req.body;
+    const { prompt, conversation } = req.body;
 
-    // Check if the user actually sent a prompt
     if (!prompt) {
-      return res.status(400).json({ error: "Prompt is required" });
+      return res.status(400).json({
+        error: "Prompt is required",
+      });
     }
 
-    // Call the Gemini API directly using the prompt from the request
+    if (!conversation) {
+      return res.status(400).json({
+        error: "Conversation is required",
+      });
+    }
+
+    if (!process.env.GEMINI_API_KEY) {
+      return res.status(500).json({
+        error: "GEMINI_API_KEY is missing in backend/.env",
+      });
+    }
+
+    if (!process.env.AI_USER_ID) {
+      return res.status(500).json({
+        error: "AI_USER_ID is missing in backend/.env",
+      });
+    }
+
+    // Save user message
+    await Message.create({
+      conversation,
+      sender: req.user._id,
+      message: prompt,
+    });
+
     const response = await ai.models.generateContent({
       model: "gemini-3.5-flash",
       contents: prompt,
     });
 
-    // Send the AI's response text back to the client
+    const aiReply = response.text?.trim();
+
+    if (!aiReply) {
+      return res.status(500).json({
+        error: "Gemini returned an empty response",
+      });
+    }
+
+    // Save AI reply
+    const aiMessage = await Message.create({
+      conversation,
+      sender: process.env.AI_USER_ID,
+      message: aiReply,
+    });
+
+    const populatedMessage =
+      await aiMessage.populate("sender");
+
     res.status(200).json({
-      reply: response.text,
+      reply: populatedMessage,
     });
 
   } catch (err) {
     console.error("Gemini API Error:", err);
 
     res.status(500).json({
-      error: "AI Error processing your request",
+      error: err.message || "AI Error",
     });
   }
 };

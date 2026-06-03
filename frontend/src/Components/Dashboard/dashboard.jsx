@@ -13,13 +13,18 @@ const Dashboard = ({ setLoginFunc }) => {
   const [queryParam, setQueryParam] = useState("");
   const [searchData, setSearchedData] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
+  const [isAIChat, setIsAIChat] = useState(false);
   const [conversation, setConversation] = useState([]);
   const ref = useRef();
   const navigate = useNavigate();
+  const ownId = JSON.parse(localStorage.getItem("userInfo"))._id;
 
   const handleSelectedUser = (id, userDetails) => {
     setSelectedUserDetails(userDetails);
     setSelectedId(id);
+    setIsAIChat(
+      userDetails.some((item) => item?.name === "Unixa AI")
+    );
 
       socket.emit("joinConversation", id);
   };
@@ -167,18 +172,37 @@ const Dashboard = ({ setLoginFunc }) => {
             <div className="conv-block">
 
               <div
-  className={`conv ${selectedId === "AI" ? "active-class" : ""}`}
-  onClick={() => {
-    setSelectedId("AI");
+  className={`conv ${isAIChat ? "active-class" : ""}`}
+  onClick={async () => {
 
-    setSelectedUserDetails([
-      {
-        name: "Unixa AI",
-        profilePic:
-          "https://cdn-icons-png.flaticon.com/512/4712/4712027.png",
-      },
-    ]);
-  }}
+  const response = await axios.post(
+    "http://localhost:8000/api/conversation/create-ai",
+    {},
+    {
+      withCredentials:true
+    }
+  );
+  setSelectedId(
+    response.data._id
+  );
+  setIsAIChat(true);
+
+  const aiUser =
+    response.data.members.find(
+      item =>
+      item._id !== ownId
+    );
+
+  setSelectedUserDetails([
+    aiUser
+  ]);
+
+  socket.emit(
+    "joinConversation",
+    response.data._id
+  );
+}}
+
 >
   <div className="conv-profile-img">
     <img
@@ -198,7 +222,15 @@ const Dashboard = ({ setLoginFunc }) => {
     </div>
   </div>
 </div>
-              {conversation.map((item, index) => {
+              {conversation
+                .filter((item) => {
+                  return !item.members.some(
+                    (member) =>
+                      member._id !== ownId &&
+                      member.name === "Unixa AI"
+                  );
+                })
+                .map((item) => {
                 return (
                   <Conversation
                     active={item._id === selectedId}
@@ -216,6 +248,7 @@ const Dashboard = ({ setLoginFunc }) => {
           <Chats
             selectedId={selectedId}
             selectUserDetails={selectUserDetails}
+            isAIChat={isAIChat}
           />
          : 
           <div className="noChatSeleceted">

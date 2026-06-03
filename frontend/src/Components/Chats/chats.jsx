@@ -3,7 +3,7 @@ import "./chats.css"
 import axios from "axios";
 import socket from "../../socket";
 import SendIcon from "@mui/icons-material/Send";
-const Chats = ({selectedId, selectUserDetails}) => {
+const Chats = ({selectedId, selectUserDetails, isAIChat}) => {
  const [content, setContent] = useState("");
    const [chats, setChats] = useState([]);
 
@@ -43,32 +43,37 @@ const handleAIChat = async () => {
   try {
     const response = await axios.post(
       "http://localhost:8000/api/ai/ask",
-      {
-        prompt: currentMessage,
-      },
+   {
+  prompt: currentMessage,
+  conversation: selectedId
+},
       {
         withCredentials: true,
       }
     );
 
-    const aiMessage = {
-      sender: {
-        name: "Unixa AI",
-        profilePic:
-          "https://cdn-icons-png.flaticon.com/512/4712/4712027.png",
-      },
-      message: response.data.reply,
-    };
+ const aiMessage =
+response.data.reply;
 
     setChats((prev) => [...prev, aiMessage]);
   } catch (err) {
-    console.log(err);
+    const errorMessage =
+      err.response?.data?.error ||
+      "AI is not responding. Please check backend terminal.";
+
+    setChats((prev) => [
+      ...prev,   
+      {
+        sender: selectUserDetails[0],
+        message: errorMessage,
+      },
+    ]);
   }
 };
 
 const handleSendMessage = async () => {
 
-   if (selectedId === "AI") {
+   if (isAIChat) {
     handleAIChat();
     return;
   }
@@ -101,18 +106,10 @@ useEffect(()=>{
   })
 },[chats])
 
-//  useEffect(() => {
- 
-//     fetchMsg();
-//     setContent("")
-  
-// }, [selectedId]);
 
 useEffect(() => {
 
-  if (selectedId === "AI") {
-    setChats([]);
-    setContent("");
+  if (!selectedId) {
     return;
   }
 

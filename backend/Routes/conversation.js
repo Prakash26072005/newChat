@@ -1,9 +1,9 @@
 import express from "express";
 import { ConversationRoom,getConversation } from "../Controllers/conversation.js";
 import { auth } from "../Authentication/auth.js";
-
+import { createAIConversation } from "../Controllers/aiConversation.js";
 const router=express.Router();
-
+router.post("/create-ai",auth,createAIConversation);
 router.post("/add-conversation",auth,ConversationRoom);
 router.get("/get-conversation",auth,getConversation);
 
