@@ -1,68 +1,112 @@
-
-.login{
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    box-sizing: border-box;
-}
-.login-card{
-    width: 40%;
-    height: fit-content;
-    box-sizing: border-box;
-    margin-top: 10%;
-    padding: 10px;
-    background:rgba(0,0,0,0.1);
-    color: rgb(246, 237, 237);
-    box-shadow: 0 0 10px #a18c8c, 0 0 20px #ffffff;  
-     transition: transform 0.5s;
+.login {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  box-sizing: border-box;
 }
 
-.login-card:hover{
-    transform: scale(1.1);
-}
-.card-name{
-    font-size: 32px;
-    font-weight: 600;
-    text-align: center;
-}
-
-.login-form{
-    width: 100%;
-    margin-top: 30px;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    gap: 35px;
-    align-items: center;
+.login-card {
+  width: 100%;
+  max-width: 500px;
+  height: fit-content;
+  box-sizing: border-box;
+  padding: 20px;
+  background: rgba(58, 207, 202, 0.1);
+  color: rgb(246, 237, 237);
+  box-shadow: 0 0 10px #a18c8c, 0 0 20px #ffffff;
+  transition: transform 0.4s ease;
 }
 
-.inputBox{
-    width: 100%;
-    height: 45px;
-    box-sizing: border-box;
-    padding: 10px;
-    border: none;
-    box-shadow: 0 0 5px #a18c8c, 0 0 0px #ffffff;
-
-    &:focus{
-        outline: none;
-    }
+.login-card:hover {
+  transform: scale(1.03);
 }
-.button{
-    padding: 10px 20px;
+
+.card-name {
+  font-size: 32px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.login-form {
+  width: 100%;
+  margin-top: 30px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.inputBox {
+  width: 100%;
+  height: 48px;
+  box-sizing: border-box;
+  padding: 12px;
+  border: none;
+  box-shadow: 0 0 5px #a18c8c;
+}
+
+.inputBox:focus {
+  outline: none;
+}
+
+.button {
+  width: 100%;
+  text-align: center;
+  padding: 12px;
+  font-size: 22px;
+  cursor: pointer;
+  box-shadow: 0 0 10px #a18c8c, 0 0 20px #ffffff;
+  transition: 0.3s;
+  background-color: rgb(64, 43, 106);
+}
+
+.button:hover {
+  background-color: rgb(112, 73, 73);
+}
+
+.linkedLinks {
+  text-align: center;
+  color: white;
+  cursor: pointer;
+  
+}
+
+.linkedLinks:hover {
+  text-decoration: underline;
+}
+
+/* Tablet */
+@media (max-width: 768px) {
+  .card-name {
+    font-size: 28px;
+  }
+
+  .button {
+    font-size: 20px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .login-card {
+    padding: 15px;
+  }
+
+  .card-name {
     font-size: 24px;
-    cursor: pointer;
-    box-shadow: 0 0 10px #a18c8c, 0 0 20px #ffffff;
-    &:hover{
-        background-color: rgb(112, 73, 73);
-    }
-}
+  }
 
-.linkedLinks{
-    color: rgb(255, 255, 255);
-    cursor: pointer;
-    &:hover{
-        text-decoration: underline;
+  .inputBox {
+    height: 44px;
+    font-size: 14px;
+  }
 
-    }
+  .button {
+    font-size: 18px;
+    padding: 10px;
+  }
+
+  .login-card:hover {
+    transform: none;
+  }
 }

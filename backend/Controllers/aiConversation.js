@@ -7,13 +7,20 @@ export const createAIConversation = async (
   try {
 
     const userId = req.user._id;
+    const aiUserId = process.env.AI_USER_ID;
+
+    if (!aiUserId) {
+      return res.status(500).json({
+        error: "AI_USER_ID is missing in backend/.env"
+      });
+    }
 
     const existingConversation =
       await Conversation.findOne({
         members: {
           $all: [
             userId,
-            process.env.AI_USER_ID
+            aiUserId
           ]
         }
       }).populate("members");
@@ -28,7 +35,7 @@ export const createAIConversation = async (
       await Conversation.create({
         members: [
           userId,
-          process.env.AI_USER_ID
+          aiUserId
         ]
       });
 

@@ -4,6 +4,21 @@ export const ConversationRoom=async(req,res)=>{
    try{
      let senderId=req.user._id;
     let {recieverId}=req.body;
+
+     const existingConversation =
+      await Conversation.findOne({
+        members: {
+          $all: [senderId, recieverId]
+        }
+      });
+
+    if (existingConversation) {
+      return res.status(200).json({
+        message: "Conversation already exists",
+        conversation: existingConversation
+      });
+    }
+    
     let newConversation= new Conversation({
         members:[senderId,recieverId]
     })
@@ -23,8 +38,16 @@ export const ConversationRoom=async(req,res)=>{
 export const getConversation=async(req,res)=>{
 try{
     let loggedinId=req.user._id;
+    const membersQuery = {
+        $in:[loggedinId]
+    };
+
+    if (process.env.AI_USER_ID) {
+        membersQuery.$nin = [process.env.AI_USER_ID];
+    }
+
     let conversations=await Conversation.find({
-        members:{$in:[loggedinId]}
+        members: membersQuery
     }).populate("members", "-password")
     .sort({ updatedAt: -1 });
       res.status(200).json({

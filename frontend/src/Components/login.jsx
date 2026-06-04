@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import "./login.css";
-import axios from "axios";
+import api from "../axiosInstance";
 import Loader from "./Loader/loader";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
@@ -28,7 +28,7 @@ const Login = ({ funcSetLogin, setLoginFunc }) => {
 
   const handleLogin = async () => {
     setLoading(true);
-    await axios
+    await api
       .post("http://localhost:8000/api/auth/login", inputField, {
         withCredentials: true,
       })

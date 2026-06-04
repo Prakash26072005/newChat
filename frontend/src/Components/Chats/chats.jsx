@@ -1,17 +1,19 @@
 import { useEffect, useState, useRef} from "react";
 import "./chats.css"
-import axios from "axios";
+import api from "../../axiosInstance";
 import socket from "../../socket";
 import SendIcon from "@mui/icons-material/Send";
-const Chats = ({selectedId, selectUserDetails, isAIChat}) => {
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+const Chats = ({selectedId, setShowChatMobile,selectUserDetails, isAIChat}) => {
  const [content, setContent] = useState("");
    const [chats, setChats] = useState([]);
-
+const [isTyping, setIsTyping] = useState(false);
   const ownId = JSON.parse(localStorage.getItem("userInfo"))._id;
 const ref= useRef();
    const fetchMsg = async () => {
   try {
-    const response = await axios.get(
+    
+    const response = await api.get(
       `http://localhost:8000/api/chat/get-message-chat/${selectedId}`,
       { withCredentials: true }
     );
@@ -41,7 +43,8 @@ const handleAIChat = async () => {
   setContent("");
 
   try {
-    const response = await axios.post(
+    setIsTyping(true);
+    const response = await api.post(
       "http://localhost:8000/api/ai/ask",
    {
   prompt: currentMessage,
@@ -54,7 +57,7 @@ const handleAIChat = async () => {
 
  const aiMessage =
 response.data.reply;
-
+setIsTyping(false);
     setChats((prev) => [...prev, aiMessage]);
   } catch (err) {
     const errorMessage =
@@ -81,7 +84,7 @@ const handleSendMessage = async () => {
   if (content.trim().length == 0)
     return alert("Please Enter Message");
 
-  await axios
+  await api
     .post(
       "http://localhost:8000/api/chat/post-message-chat",
       {
@@ -125,6 +128,10 @@ ref?.current?.scrollIntoView({behavior:"smooth"})
   return (
    <div className="dashboard-chats">
     <div className="chatNameBlock">
+      <ArrowBackIcon
+    className="backBtn"
+    onClick={() => setShowChatMobile(false)}
+  />
         <div className="chat-profile-img">
                             <img src={selectUserDetails[0]?.profilePic} />
         </div>
@@ -153,7 +160,13 @@ ref?.current?.scrollIntoView({behavior:"smooth"})
     );
   })
 }
-      
+{isTyping && (
+  <div className="typing-bubble">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+)}
     </div>
     <div className="message-box">
       

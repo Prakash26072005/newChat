@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import "./register.css";
 import Loader from "./Loader/loader";
-import axios from "axios";
+import api from "../axiosInstance.js";
 const Register = ({ funcSetLogin }) => {
 
   const passwordRef = useRef();
@@ -36,7 +36,7 @@ const handleRegister = async () => {
   formData.append("password", inputField.password);
   formData.append("profilePic", inputField.profilePic);
 
-  await axios
+  await api
     .post("http://localhost:8000/api/auth/register", formData)
     .then((response) => {
       console.log(response);
@@ -97,7 +97,7 @@ const handleRegister = async () => {
             className="inputBox"
             placeholder="Enter Name"
           />
-          <div className="imageFile">
+          {/* <div className="imageFile">
   <label htmlFor="profile-upload" className="select-profile-btn">
     Select Profile Image
   </label>
@@ -110,6 +110,35 @@ const handleRegister = async () => {
         : "https://as2.ftcdn.net/v2/jpg/05/89/93/27/1000_F_589932782_vQAEAZhHnq1QCGu5ikwrYaQD0Mmurm0N.jpg"
     }
   />
+
+  <input
+    id="profile-upload"
+    type="file"
+    accept="image/*"
+    hidden
+    onChange={(e) => {
+      setInputFields({
+        ...inputField,
+        profilePic: e.target.files[0],
+      });
+    }}
+  />
+</div> */}
+<div className="imageFile">
+
+  <img
+    className="avatar"
+    src={
+      inputField.profilePic
+        ? URL.createObjectURL(inputField.profilePic)
+        : "https://as2.ftcdn.net/v2/jpg/05/89/93/27/1000_F_589932782_vQAEAZhHnq1QCGu5ikwrYaQD0Mmurm0N.jpg"
+    }
+    alt="Profile"
+  />
+
+  <label htmlFor="profile-upload" className="select-profile-btn">
+    Select Profile Image
+  </label>
 
   <input
     id="profile-upload"

@@ -3,7 +3,6 @@ import bcrypt, { hash } from "bcryptjs";
 import jwt from "jsonwebtoken";
 import cloudinary from "../Config/cloudinary.js";
 
-
 export const register = async (req, res) => {
   try {
     const { name, mobileNumber, password } = req.body;
@@ -37,7 +36,7 @@ export const register = async (req, res) => {
       name,
       mobileNumber,
       password: hashPassword,
-      profilePic: profilePicUrl,
+        profilePic: profilePicUrl || undefined,
     });
 
     await newUser.save();
@@ -54,11 +53,11 @@ export const register = async (req, res) => {
   }
 };
 
-
-const cookieOptions={
-    httpOnly:true,
-    secure:false,
-    sameSite:"Lax"
+const cookieOptions = {
+  httpOnly: true,
+  secure: false,
+  sameSite: "Lax",
+  maxAge: 7 * 24 * 60 * 60 * 1000
 };
 
 export const login=async(req, res)=>{
@@ -67,7 +66,11 @@ export const login=async(req, res)=>{
     const  userExist=await User.findOne({mobileNumber});
     if(userExist&& await bcrypt.compare(password,userExist.password)){
 
-        const token=jwt.sign({userId:userExist._id},"its-secret");
+     const token = jwt.sign(
+  { userId: userExist._id },
+  "its-secret",
+  { expiresIn: "7d" }
+);
        res.cookie("token",token,cookieOptions);
 
         res.status(200).json({
@@ -89,9 +92,15 @@ export const login=async(req, res)=>{
  export const searchMember=async(req,res)=>{
     try{
   let {queryParam}= req.query;
+  const excludedUserIds = [req.user._id];
+
+  if (process.env.AI_USER_ID) {
+    excludedUserIds.push(process.env.AI_USER_ID);
+  }
+
   const users = await User.find({
       $and: [
-        { _id: { $ne: req.user._id } },
+        { _id: { $nin: excludedUserIds } },
         {
           $or: [
             {

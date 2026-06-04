@@ -41,10 +41,26 @@ export const askAI = async (req, res) => {
       message: prompt,
     });
 
-    const response = await ai.models.generateContent({
-      model: "gemini-3.5-flash",
-      contents: prompt,
-    });
+const response = await ai.models.generateContent({
+  model: "gemini-3.5-flash",
+  contents: `
+You are Maya, a friendly female AI assistant integrated into a chat application.
+
+Personality:
+- Friendly
+- Professional
+- Helpful
+- Conversational
+
+Identity:
+- Your name is Maya.
+- If asked who created you, say:
+  "I am Maya, the AI assistant of this chat application."
+
+User Message:
+${prompt}
+`,
+});
 
     const aiReply = response.text?.trim();
 

@@ -4,11 +4,13 @@ import SearchIcon from "@mui/icons-material/Search";
 import LogoutIcon from "@mui/icons-material/Logout";
 import Conversation from "../Conversation/conversation";
 import Chats from "../Chats/chats";
-import axios from "axios";
+import api from "../../axiosInstance";
 import { useNavigate } from "react-router-dom";
 import socket from "../../socket";
+import { toast, ToastContainer } from "react-toastify";
 
 const Dashboard = ({ setLoginFunc }) => {
+  const [showChatMobile, setShowChatMobile] = useState(false);
   const [selectUserDetails, setSelectedUserDetails] = useState([]);
   const [queryParam, setQueryParam] = useState("");
   const [searchData, setSearchedData] = useState([]);
@@ -19,15 +21,24 @@ const Dashboard = ({ setLoginFunc }) => {
   const navigate = useNavigate();
   const ownId = JSON.parse(localStorage.getItem("userInfo"))._id;
 
-  const handleSelectedUser = (id, userDetails) => {
-    setSelectedUserDetails(userDetails);
-    setSelectedId(id);
-    setIsAIChat(
-      userDetails.some((item) => item?.name === "Unixa AI")
-    );
+  // const handleSelectedUser = (id, userDetails) => {
+  //   setSelectedUserDetails(userDetails);
+  //   setSelectedId(id);
+  //   setIsAIChat(false);
 
-      socket.emit("joinConversation", id);
-  };
+  //     socket.emit("joinConversation", id);
+  // };
+  const handleSelectedUser = (id, userDetails) => {
+  setSelectedUserDetails(userDetails);
+  setSelectedId(id);
+  setIsAIChat(false);
+
+  if (window.innerWidth <= 768) {
+    setShowChatMobile(true);
+  }
+
+  socket.emit("joinConversation", id);
+};
   
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -48,7 +59,7 @@ const Dashboard = ({ setLoginFunc }) => {
 
   const fetchConversation = async () => {
     try {
-      const res = await axios.get(
+      const res = await api.get(
         "http://localhost:8000/api/conversation/get-conversation",
         { withCredentials: true },
       );
@@ -60,7 +71,7 @@ const Dashboard = ({ setLoginFunc }) => {
 
   const fetchUserBySearch = async () => {
     try {
-      const res = await axios.get(
+      const res = await api.get(
         `http://localhost:8000/api/auth/searchedMember?queryParam=${queryParam}`,
         { withCredentials: true },
       );
@@ -75,6 +86,7 @@ const Dashboard = ({ setLoginFunc }) => {
       fetchUserBySearch();
     } else {
       setSearchedData([]);
+      
     }
   }, [queryParam]);
 
@@ -84,7 +96,7 @@ const Dashboard = ({ setLoginFunc }) => {
   
   const handleLogout = async () => {
     try {
-      await axios.post(
+      await api.post(
         "http://localhost:8000/api/auth/logout",
         {},
         { withCredentials: true },
@@ -99,13 +111,17 @@ const Dashboard = ({ setLoginFunc }) => {
 
   const handleCreateConv = async (id) => {
     try {
-      await axios.post(
+      const response =await api.post(
         "http://localhost:8000/api/conversation/add-conversation",
         { recieverId: id },
         { withCredentials: true },
       );
+        toast.success(
+      response.data.message
+    );
       fetchConversation();
       setSearchedData([]);
+      setQueryParam("");
     } catch (err) {
       console.log(err);
     }
@@ -113,8 +129,14 @@ const Dashboard = ({ setLoginFunc }) => {
 
   return (
     <div className="dashboard">
+         <ToastContainer />
       <div className="dashboard-card">
-        <div className="dashboard-conversations">
+        {/* <div className="dashboard-conversations"> */}
+        <div
+  className={`dashboard-conversations ${
+    showChatMobile ? "mobile-hide" : ""
+  }`}
+>
           <div className="dashboard-conv-block">
             <div className="dashboard-title-block">
               <div>Chats</div>
@@ -160,7 +182,7 @@ const Dashboard = ({ setLoginFunc }) => {
                 <div ref={ref} className="searched-box">
                   <div className="search-item">
                     <img
-                      src="https://via.placeholder.com/40"
+                      src="https://static.vecteezy.com/system/resources/thumbnails/021/975/489/small_2x/search-not-found-3d-render-icon-illustration-with-transparent-background-empty-state-png.png"
                       className="search-item-profile"
                       alt=""
                     />
@@ -175,7 +197,7 @@ const Dashboard = ({ setLoginFunc }) => {
   className={`conv ${isAIChat ? "active-class" : ""}`}
   onClick={async () => {
 
-  const response = await axios.post(
+  const response = await api.post(
     "http://localhost:8000/api/conversation/create-ai",
     {},
     {
@@ -196,6 +218,9 @@ const Dashboard = ({ setLoginFunc }) => {
   setSelectedUserDetails([
     aiUser
   ]);
+    if (window.innerWidth <= 768) {
+    setShowChatMobile(true);
+  }
 
   socket.emit(
     "joinConversation",
@@ -207,14 +232,14 @@ const Dashboard = ({ setLoginFunc }) => {
   <div className="conv-profile-img">
     <img
       className="profile-img-conv"
-      src="https://cdn-icons-png.flaticon.com/512/4712/4712027.png"
+      src="https://tse3.mm.bing.net/th/id/OIP.H3twlxE3n7ME2gMJP6rzLAHaE8?r=0&cb=thfvnextfalcon&w=540&h=360&rs=1&pid=ImgDetMain&o=7&rm=3"
       alt=""
     />
   </div>
 
   <div className="conv-name">
     <div className="conv-profile-name">
-      Unixa AI
+      Maya
     </div>
 
     <div className="conv-last-message">
@@ -222,15 +247,7 @@ const Dashboard = ({ setLoginFunc }) => {
     </div>
   </div>
 </div>
-              {conversation
-                .filter((item) => {
-                  return !item.members.some(
-                    (member) =>
-                      member._id !== ownId &&
-                      member.name === "Unixa AI"
-                  );
-                })
-                .map((item) => {
+              {conversation.map((item) => {
                 return (
                   <Conversation
                     active={item._id === selectedId}
@@ -244,14 +261,25 @@ const Dashboard = ({ setLoginFunc }) => {
             </div>
           </div>
         </div>
-        {selectUserDetails ? 
+        {/* {selectUserDetails.length>0 ? 
           <Chats
             selectedId={selectedId}
             selectUserDetails={selectUserDetails}
             isAIChat={isAIChat}
+             setShowChatMobile={setShowChatMobile}
           />
          : 
-          <div className="noChatSeleceted">
+          <div className="noChatSeleceted"> */}
+          {selectUserDetails.length > 0 &&
+(window.innerWidth > 768 || showChatMobile) ? (
+  <Chats
+    selectedId={selectedId}
+    selectUserDetails={selectUserDetails}
+    isAIChat={isAIChat}
+    setShowChatMobile={setShowChatMobile}
+  />
+) : 
+  <div className="noChatSeleceted">
             <img
               src="https://cdni.iconscout.com/illustration/premium/thumb/people-chatting-on-phone-8044282-6369994.png"
               className="noChatImage"
