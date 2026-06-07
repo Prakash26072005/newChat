@@ -14,7 +14,7 @@ const ref= useRef();
   try {
     
     const response = await api.get(
-      `http://localhost:8000/api/chat/get-message-chat/${selectedId}`,
+   api.get(`/api/chat/get-message-chat/${selectedId}`),
       { withCredentials: true }
     );
 
@@ -45,7 +45,7 @@ const handleAIChat = async () => {
   try {
     setIsTyping(true);
     const response = await api.post(
-      "http://localhost:8000/api/ai/ask",
+      "api/ai/ask",
    {
   prompt: currentMessage,
   conversation: selectedId
@@ -86,7 +86,7 @@ const handleSendMessage = async () => {
 
   await api
     .post(
-      "http://localhost:8000/api/chat/post-message-chat",
+     "/api/chat/post-message-chat",
       {
         conversation: selectedId,
         content: content,

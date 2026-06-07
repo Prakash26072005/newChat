@@ -21,13 +21,6 @@ const Dashboard = ({ setLoginFunc }) => {
   const navigate = useNavigate();
   const ownId = JSON.parse(localStorage.getItem("userInfo"))._id;
 
-  // const handleSelectedUser = (id, userDetails) => {
-  //   setSelectedUserDetails(userDetails);
-  //   setSelectedId(id);
-  //   setIsAIChat(false);
-
-  //     socket.emit("joinConversation", id);
-  // };
   const handleSelectedUser = (id, userDetails) => {
   setSelectedUserDetails(userDetails);
   setSelectedId(id);
@@ -60,7 +53,7 @@ const Dashboard = ({ setLoginFunc }) => {
   const fetchConversation = async () => {
     try {
       const res = await api.get(
-        "http://localhost:8000/api/conversation/get-conversation",
+       "/api/conversation/get-conversation",
         { withCredentials: true },
       );
       setConversation(res.data.conversations);
@@ -72,7 +65,7 @@ const Dashboard = ({ setLoginFunc }) => {
   const fetchUserBySearch = async () => {
     try {
       const res = await api.get(
-        `http://localhost:8000/api/auth/searchedMember?queryParam=${queryParam}`,
+        `/api/auth/searchedMember?queryParam=${queryParam}`,
         { withCredentials: true },
       );
       setSearchedData(res.data);
@@ -97,7 +90,7 @@ const Dashboard = ({ setLoginFunc }) => {
   const handleLogout = async () => {
     try {
       await api.post(
-        "http://localhost:8000/api/auth/logout",
+        "/api/auth/logout",
         {},
         { withCredentials: true },
       );
@@ -112,7 +105,7 @@ const Dashboard = ({ setLoginFunc }) => {
   const handleCreateConv = async (id) => {
     try {
       const response =await api.post(
-        "http://localhost:8000/api/conversation/add-conversation",
+        "/api/conversation/add-conversation",
         { recieverId: id },
         { withCredentials: true },
       );
@@ -198,7 +191,7 @@ const Dashboard = ({ setLoginFunc }) => {
   onClick={async () => {
 
   const response = await api.post(
-    "http://localhost:8000/api/conversation/create-ai",
+    "/api/conversation/create-ai",
     {},
     {
       withCredentials:true
@@ -261,15 +254,7 @@ const Dashboard = ({ setLoginFunc }) => {
             </div>
           </div>
         </div>
-        {/* {selectUserDetails.length>0 ? 
-          <Chats
-            selectedId={selectedId}
-            selectUserDetails={selectUserDetails}
-            isAIChat={isAIChat}
-             setShowChatMobile={setShowChatMobile}
-          />
-         : 
-          <div className="noChatSeleceted"> */}
+        
           {selectUserDetails.length > 0 &&
 (window.innerWidth > 768 || showChatMobile) ? (
   <Chats

@@ -1,6 +1,10 @@
-import {io} from "socket.io-client";
+import { io } from "socket.io-client";
 
-const socket = io('ws://localhost:8000');
-
+const socket = io(
+  import.meta.env.VITE_API_URL,
+  {
+    withCredentials: true,
+  }
+);
 
 export default socket;

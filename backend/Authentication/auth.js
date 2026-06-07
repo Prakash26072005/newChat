@@ -7,7 +7,10 @@ export const auth= async(req,res,next)=>{
         return res.status(401).json({error:"No token, authorization denied"});
     }
     try{
-        const decode= jwt.verify(token,"its-secret");
+       const decode = jwt.verify(
+  token,
+  process.env.JWT_SECRET
+);
         let loginUserId=decode.userId;
         req.user=await User.findById(loginUserId).select("-password");
            if (!loginUserId) {

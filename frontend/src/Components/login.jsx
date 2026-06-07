@@ -29,7 +29,7 @@ const Login = ({ funcSetLogin, setLoginFunc }) => {
   const handleLogin = async () => {
     setLoading(true);
     await api
-      .post("http://localhost:8000/api/auth/login", inputField, {
+      .post(   "/api/auth/login", inputField, {
         withCredentials: true,
       })
       .then((response) => {

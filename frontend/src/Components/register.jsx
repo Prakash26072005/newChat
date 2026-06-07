@@ -37,7 +37,7 @@ const handleRegister = async () => {
   formData.append("profilePic", inputField.profilePic);
 
   await api
-    .post("http://localhost:8000/api/auth/register", formData)
+    .post("/api/auth/register", formData)
     .then((response) => {
       console.log(response);
       funcSetLogin(true);
