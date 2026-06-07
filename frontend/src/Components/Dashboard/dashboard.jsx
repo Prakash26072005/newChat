@@ -19,7 +19,8 @@ const Dashboard = ({ setLoginFunc }) => {
   const [conversation, setConversation] = useState([]);
   const ref = useRef();
   const navigate = useNavigate();
-  const ownId = JSON.parse(localStorage.getItem("userInfo"))._id;
+  const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
+  const ownId = userInfo?._id;
 
   const handleSelectedUser = (id, userDetails) => {
   setSelectedUserDetails(userDetails);
@@ -84,8 +85,13 @@ const Dashboard = ({ setLoginFunc }) => {
   }, [queryParam]);
 
   useEffect(() => {
+    if (!ownId) {
+      navigate("/");
+      return;
+    }
+
     fetchConversation();
-  }, []);
+  }, [navigate, ownId]);
   
   const handleLogout = async () => {
     try {

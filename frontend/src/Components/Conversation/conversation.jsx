@@ -5,10 +5,11 @@ export const Conversation = (props) => {
 const [friendItem,setFriendItem] =useState([])
 
 useEffect(()=>{
-  let ownId = JSON.parse(localStorage.getItem("userInfo"))._id;
+  const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
+  const ownId = userInfo?._id;
   const friendItem = props.members.filter((item)=>item._id !== ownId);
   setFriendItem(friendItem);
-}, [props.members]); // ✅ ADD THIS}
+}, [props.members]);
 
 
 const handleOnClick=()=>{

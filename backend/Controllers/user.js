@@ -53,10 +53,14 @@ export const register = async (req, res) => {
   }
 };
 
+const isSecureCookie =
+  process.env.NODE_ENV === "production" ||
+  process.env.CLIENT_URL?.startsWith("https://");
+
 const cookieOptions = {
   httpOnly: true,
-  secure: true,
-  sameSite: "none",
+  secure: isSecureCookie,
+  sameSite: isSecureCookie ? "none" : "lax",
   maxAge: 7 * 24 * 60 * 60 * 1000,
 };
 
@@ -125,6 +129,15 @@ process.env.JWT_SECRET,
        res.status(500).json({error:"server error"})
  }
  }
+
+export const getCurrentUser = async (req, res) => {
+  try {
+    res.status(200).json({ user: req.user });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
 
 export const logout = async (req, res) => {
     res.clearCookie('token', cookieOptions).json({ message: 'Logged out successfully' });

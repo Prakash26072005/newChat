@@ -8,13 +8,14 @@ const Chats = ({selectedId, setShowChatMobile,selectUserDetails, isAIChat}) => {
  const [content, setContent] = useState("");
    const [chats, setChats] = useState([]);
 const [isTyping, setIsTyping] = useState(false);
-  const ownId = JSON.parse(localStorage.getItem("userInfo"))._id;
+  const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
+  const ownId = userInfo?._id;
 const ref= useRef();
    const fetchMsg = async () => {
   try {
     
     const response = await api.get(
-   api.get(`/api/chat/get-message-chat/${selectedId}`),
+      `/api/chat/get-message-chat/${selectedId}`,
       { withCredentials: true }
     );
 
