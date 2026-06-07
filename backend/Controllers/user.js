@@ -53,9 +53,11 @@ export const register = async (req, res) => {
   }
 };
 
+const clientUrl = process.env.CLIENT_URL || "";
+const isLocalhostClient = /localhost|127\.0\.0\.1/.test(clientUrl);
 const isSecureCookie =
   process.env.NODE_ENV === "production" ||
-  process.env.CLIENT_URL?.startsWith("https://");
+  (clientUrl.startsWith("https://") && !isLocalhostClient);
 
 const cookieOptions = {
   httpOnly: true,
