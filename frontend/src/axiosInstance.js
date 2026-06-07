@@ -10,12 +10,11 @@ api.interceptors.response.use(
   (response) => response,
 
   (error) => {
+    const isSessionCheck = error.config?.url?.includes("/api/auth/me");
 
-    if (error.response?.status === 401) {
-
+    if (error.response?.status === 401 && !isSessionCheck) {
       localStorage.removeItem("isLogin");
       localStorage.removeItem("userInfo");
-
       window.location.href = "/";
     }
 

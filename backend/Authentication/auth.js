@@ -11,11 +11,14 @@ export const auth= async(req,res,next)=>{
   token,
   process.env.JWT_SECRET
 );
-        let loginUserId=decode.userId;
-        req.user=await User.findById(loginUserId).select("-password");
-           if (!loginUserId) {
-      return res.status(401).json({ error: "User not found" });
-    }
+        const loginUserId = decode.userId;
+        const user = await User.findById(loginUserId).select("-password");
+
+        if (!user) {
+          return res.status(401).json({ error: "User not found" });
+        }
+
+        req.user = user;
         next();
     }
     catch(error){
