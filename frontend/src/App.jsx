@@ -4,9 +4,11 @@ import { Route, Routes, Navigate } from "react-router-dom";
 import Home from './Components/home'
 import Dashboard from './Components/Dashboard/dashboard';
 import api from './axiosInstance';
+import Loader from './Components/Loader/loader';
 
 function App() {
-  const [isLogin, setIsLogin] = useState(() => localStorage.getItem("isLogin") === "true");
+  const [isLogin, setIsLogin] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
   const setLoginFunc = (val) => {
     setIsLogin(val);
@@ -14,7 +16,10 @@ function App() {
 
   useEffect(() => {
     const verifySession = async () => {
-      if (!localStorage.getItem("isLogin")) return;
+      if (!localStorage.getItem("isLogin")) {
+        setIsCheckingAuth(false);
+        return;
+      }
 
       try {
         const response = await api.get("/api/auth/me", { withCredentials: true });
@@ -22,6 +27,7 @@ function App() {
         if (response.data?.user) {
           localStorage.setItem("userInfo", JSON.stringify(response.data.user));
           setIsLogin(true);
+          setIsCheckingAuth(false);
           return;
         }
       } catch (error) {
@@ -31,10 +37,15 @@ function App() {
       localStorage.removeItem("isLogin");
       localStorage.removeItem("userInfo");
       setIsLogin(false);
+      setIsCheckingAuth(false);
     };
 
     verifySession();
   }, []);
+
+  if (isCheckingAuth) {
+    return <Loader />;
+  }
 
   return (
   <Routes>
