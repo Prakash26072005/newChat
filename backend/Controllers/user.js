@@ -96,10 +96,14 @@ process.env.JWT_SECRET,
 }
 
 
- export const searchMember=async(req,res)=>{
-    try{
-  let {queryParam}= req.query;
-  const excludedUserIds = [req.user._id];
+ export const searchMember = async (req, res) => {
+    try {
+      if (!req.user?._id) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      let { queryParam } = req.query;
+      const excludedUserIds = [req.user._id];
 
   if (process.env.AI_USER_ID) {
     excludedUserIds.push(process.env.AI_USER_ID);
@@ -135,6 +139,10 @@ process.env.JWT_SECRET,
 
 export const getCurrentUser = async (req, res) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
     res.status(200).json({ user: req.user });
   } catch (error) {
     console.log(error);
