@@ -13,11 +13,14 @@
   justify-content: center;
   align-items: center;
 }
+.dashboard-chats {
+  overflow: hidden;
+}
 
 .dashboard-card {
   width: 100%;
   max-width: 1500px;
-  height: 95vh;
+  height: 100dvh;
   background-image: url("../../assets/im2ForChat.png");
 
   background-size: cover;
@@ -33,6 +36,7 @@
   flex: 0.3;
   border-right: 1px solid #474444;
   min-width: 320px;
+  width: 100%;
 }
 
 .dashboard-conv-block {
@@ -208,9 +212,28 @@
     font-size: 20px;
   }
 
-  .searchBox {
-    font-size: 14px;
-  }
+.searchBoxDiv{
+  gap:5px;
+}
+
+.searchBox{
+  padding:8px 12px;
+}
+.dashboard-chats {
+  width:100%;
+  height:100dvh;
+}
+
+.chatNameBlock{
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+
+.message-box{
+  position:sticky;
+  bottom:0;
+}
 
   .searchIcon {
     width: 40px;

@@ -104,11 +104,22 @@ setContent("");
     });
 };
 
-useEffect(()=>{
-  socket.on("receiveMessage",(response)=>{
-    setChats([...chats,response])
-  })
-},[chats])
+// useEffect(()=>{
+//   socket.on("receiveMessage",(response)=>{
+//     setChats([...chats,response])
+//   })
+// },[chats])
+useEffect(() => {
+  const handleReceive = (response) => {
+    setChats(prev => [...prev, response]);
+  };
+
+  socket.on("receiveMessage", handleReceive);
+
+  return () => {
+    socket.off("receiveMessage", handleReceive);
+  };
+}, []);
 
 
 useEffect(() => {
@@ -122,10 +133,11 @@ useEffect(() => {
 
 }, [selectedId]);
 
-
-useEffect(()=>{
-ref?.current?.scrollIntoView({behavior:"smooth"})
-})
+useEffect(() => {
+  ref.current?.scrollIntoView({
+    behavior: "smooth"
+  });
+}, [chats]);
   return (
    <div className="dashboard-chats">
     <div className="chatNameBlock">
